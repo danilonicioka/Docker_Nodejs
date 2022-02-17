@@ -49,7 +49,7 @@ docker-compose up
 
 OBS: Na pasta do arquivo
 
-- `version: "3.8"` -> Indica qual a versão do docker compose será utilizada
+- `version: "3.7"` -> Indica qual a versão do docker compose será utilizada
 
 - `services:` -> Indica quais os serviços da aplicação(containers)
   - `app:` -> Pode ser definido qualquer nome para o serviço(app, node, etc)
