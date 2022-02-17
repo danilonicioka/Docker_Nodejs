@@ -4,22 +4,24 @@ Vídeo [Ambiente de desenvolvimento NodeJS com Docker e Docker Compose](https://
 
 ## Dockerfile
 
-Indica qual versão e de qual máquina quer utilizar
-não definir qual a versão do node(16, por exemplo) indica que a última versão será baixada
-alpine é uma versão mais reduzida
+- `FROM node:alpine` -> Indica qual versão e de qual container quer utilizar
 
-Indica qual o diretório dentro da máquina em que quer trabalhar
+  - Não definir qual a versão do node(16, por exemplo) indica que a última versão será baixada
+  - `alpine` é uma versão mais reduzida
 
-Copia todos os arquivos iniciados com "package" e terminados em ".json" para dentro da máquina(./
-)
+- `WORKDIR /usr/app` -> Indica qual o diretório dentro do container em que quer trabalhar
 
-Os dois arquivos são suficientes para rodar o `npm install` e instalar as dependências
+- `COPY package*.json ./` -> Copia todos os arquivos iniciados com "package" e terminados em ".json" para dentro do docker(./)
 
-Copia todos os arquivos(.) restantes para dentro da máquina(.) - Porém, como já foi criado um `node_modules` dentro da máquina, não precisa passar também, então indica-se isso no arquivo `.dockerignore`
+- `RUN npm install` -> Os arquivos copiados acima são suficientes para rodar o `npm install` e instalar as dependências
 
-Indica ao servidor qual a porta deve expôr para a máquina poder acessar.
+- `COPY . .` -> Copia todos os arquivos(.) restantes para dentro do container(.)
 
-Esse comando deve ser único por dockerfile e indica qual o comando o servidor deve executar para dar start na aplicação. Esse comando pode ser definido no arquivo `package.json` e deve ser separado como um array de strings.
+  - Porém, como já foi criado um `node_modules` dentro da container, não precisa passar também, então indica-se isso no arquivo `.dockerignore`
+
+- `EXPOSE 3000` -> Indica ao container qual a porta deve ouvir.
+
+- `CMD [ "npm", "start" ]` -> Esse comando deve ser único por dockerfile e indica qual o comando o servidor deve executar para dar start na aplicação. Esse comando pode ser definido no arquivo `package.json` e deve ser separado como um array de strings.
 
 ## Criando imagem a partir do Dockerfile
 
@@ -47,16 +49,13 @@ docker-compose up
 
 OBS: Na pasta do arquivo
 
-Indica qual a versão do docker compose será utilizada
+- `version: "3"` -> Indica qual a versão do docker compose será utilizada
 
-Indica quais os serviços da aplicação(containers)
-
-Pode ser definido qualquer nome para o serviço(app, node, etc)
-
-Indica onde está o arquivo dockerfile para a aplicação. Como está na mesma pasta do docker-compose: `.`
-
-Indica qual comando quer executar assim que a aplicação subir
-
-Indica qual o redirecionamento de portas
-
-Indica qual pasta deve ser refletida para dentro do docker e onde ela será refletida, ou seja, o docker acompanhará as mudanças dos arquivos da pasta onde está o docker-compose e colocará na pasta /usr/app no docker
+- `services:` -> Indica quais os serviços da aplicação(containers)
+  - `app:` -> Pode ser definido qualquer nome para o serviço(app, node, etc)
+    - `build: .` -> Indica onde está o arquivo dockerfile para a aplicação. Como está na mesma pasta do docker-compose: `.`
+    - `command: npm start` -> Indica qual comando quer executar assim que a aplicação subir
+    - `ports:` -> Indica qual o redirecionamento de portas
+      - `- 3000:3000`
+    - `volumes:` -> Indica qual pasta deve ser refletida para dentro do container e onde ela será refletida, ou seja, o container acompanhará as mudanças dos arquivos da pasta onde está o docker-compose e colocará na pasta /usr/app no container
+      - `- .:/usr/app`
